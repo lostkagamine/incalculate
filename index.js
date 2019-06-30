@@ -29,16 +29,16 @@ var tbPointer = 0;
 
 for (let i=0; i<split.length; i++) {
     let j = split[i]
-    console.log(tbPointer, j, i)
+    if (DEBUG) console.log(tbPointer, j, i)
     if (j === '[') {
-        console.log(tbPointer, sectionPointer)
+        if (DEBUG) console.log(tbPointer, sectionPointer)
         tempBrackets[tbPointer++] = (i);
     }
     if (j === ']') {
-        console.log(sectionPointer, tbPointer, util.inspect(tempBrackets))
+        if (DEBUG) console.log(sectionPointer, tbPointer, util.inspect(tempBrackets))
         let h = tbPointer
         h -= 1
-        console.log(h, tempBrackets[h], tempBrackets)
+        if (DEBUG) console.log(h, tempBrackets[h], tempBrackets)
         SECTIONS[sectionPointer++] = [(tempBrackets[h]), parseInt(i)];
         tbPointer = h;
     }
