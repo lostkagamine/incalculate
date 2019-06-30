@@ -34,9 +34,18 @@ module.exports = [
             cstk.push(cstk.pop() * cstk.pop());
         },
         'n': function() {}, // nop
-        ' ': function() {}, // space, nop
         'E': function() { // halt
             HALT = true;
+        },
+        '?': function() { // restart section
+            if (parseInt(CURRENT_SECTION) !== -1) {
+                PC = SECTIONS[parseInt(CURRENT_SECTION)][0]
+            }
+        },
+        '!': function() { // jump to end of section
+            if (parseInt(CURRENT_SECTION) !== -1) {
+                PC = SECTIONS[parseInt(CURRENT_SECTION)][1]
+            }
         },
         'z': function() { // skip instruction if less than or equal to 0
             let cstk = STACK[STACKP];
@@ -88,9 +97,6 @@ module.exports = [
         },
         'h': function() { // push the pop register to the stack
             STACK[STACKP].push(REGISTER.pop)
-        },
-        'J': function() { // jump to marker
-            PC = closestMarker
         },
         'x': function() { // destroy last value on stack
             STACK[STACKP].pop()

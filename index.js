@@ -14,27 +14,42 @@ global.REGISTER = {
 const fs = require('fs');
 const instructions = require('./instructions');
 var file = fs.readFileSync('./code.txt').toString();
+const util = require('util');
 var split = file.split('')
 
-var bracket = {};
-var findingBracket = false;
-var firstBracket = null;
+global.SECTIONS = [];
+global.CURRENT_SECTION = -1;
 
-for (let i=split.length; i>0; i--) {
+var sectionPointer = 0;
+var findingBracket = false;
+var tempBrackets = [];
+var tbPointer = 0;
+
+for (let i=0; i<split.length; i++) {
     let j = split[i]
-    if (j === ']') {
-        if (findingBracket)
-            throw new Error("Syntax error: ] found while searching for [!");
-        firstBracket = parseInt(i);
-        findingBracket = true;
-    }
+    console.log(tbPointer, j, i)
     if (j === '[') {
-        if (!findingBracket)
-            throw new Error("Syntax error: [ found without matching ]!");
-        bracket[parseInt(firstBracket)] = parseInt(i);
-        findingBracket = false;
+        console.log(tbPointer, sectionPointer)
+        tempBrackets[tbPointer++] = (i);
+    }
+    if (j === ']') {
+        console.log(sectionPointer, tbPointer, util.inspect(tempBrackets))
+        let h = tbPointer
+        h -= 1
+        console.log(h, tempBrackets[h], tempBrackets)
+        SECTIONS[sectionPointer++] = [(tempBrackets[h]), parseInt(i)];
+        tbPointer = h;
     }
 }
+
+global.SECTION_START = Object.values(SECTIONS).map(a => a[0]);
+global.SECTION_END = Object.values(SECTIONS).map(a => a[1]);
+// idea by el, hacks by me
+
+console.log('----- DEBUGGING INFORMATION -----')
+console.log(util.inspect(SECTIONS))
+console.log(util.inspect(SECTION_START), util.inspect(SECTION_END));
+console.log('----- END DEBUG INFORMATION -----')
 
 const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
@@ -70,11 +85,24 @@ while (true) {
         commitStringmode()
         break
     }
-    let currentIns = split[PC++]
+    let currentIns = split[PC]
+    for (let i in SECTIONS) {
+        if (PC >= SECTIONS[i][0] && PC <= SECTIONS[i][1]) {
+            CURRENT_SECTION = parseInt(i)
+            break
+        } else {
+            CURRENT_SECTION = -1
+        }
+    }
+    console.log(PC, CURRENT_SECTION, currentIns)
+    PC++
     if (!currentIns) {
         commitNumbermode()
         commitStringmode()
         break
+    }
+    if (!smode && [' ', '[', ']'].includes(currentIns)) {
+        continue
     }
     if (currentIns === '@') {
         if (numbermode) commitNumbermode()
@@ -105,10 +133,6 @@ while (true) {
         if (INSSET > instructions.length) {
             INSSET = 0
         }
-        continue
-    }
-    if (currentIns === '!') {
-        closestMarker = PC
         continue
     }
     if (numbers.includes(currentIns)) {
