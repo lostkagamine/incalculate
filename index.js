@@ -2,6 +2,8 @@
  * I'm not sure what this is yet
  */
 
+const DEBUG = false
+
 global.STACK = [[], [], []]
 global.STACKP = 0 // index of the current stack
 global.INSSET = 0
@@ -46,10 +48,12 @@ global.SECTION_START = Object.values(SECTIONS).map(a => a[0]);
 global.SECTION_END = Object.values(SECTIONS).map(a => a[1]);
 // idea by el, hacks by me
 
-console.log('----- DEBUGGING INFORMATION -----')
-console.log(util.inspect(SECTIONS))
-console.log(util.inspect(SECTION_START), util.inspect(SECTION_END));
-console.log('----- END DEBUG INFORMATION -----')
+if (DEBUG) {
+    console.log('----- DEBUGGING INFORMATION -----')
+    console.log(util.inspect(SECTIONS))
+    console.log(util.inspect(SECTION_START), util.inspect(SECTION_END));
+    console.log('----- END DEBUG INFORMATION -----')
+}
 
 const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
@@ -94,7 +98,7 @@ while (true) {
             CURRENT_SECTION = -1
         }
     }
-    console.log(PC, CURRENT_SECTION, currentIns)
+    if (DEBUG) console.log(PC, CURRENT_SECTION, currentIns)
     PC++
     if (!currentIns) {
         commitNumbermode()
