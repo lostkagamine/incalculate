@@ -15,7 +15,12 @@ global.REGISTER = {
 }
 const fs = require('fs');
 const instructions = require('./instructions');
-var file = fs.readFileSync('./code.txt').toString();
+let filename = process.argv[2]
+if (!filename) {
+    console.log(`usage: node ${process.argv[1]} <filename.ic>`)
+    process.exit(1)
+}
+var file = fs.readFileSync(`./${filename}`).toString();
 const util = require('util');
 var split = file.split('')
 
